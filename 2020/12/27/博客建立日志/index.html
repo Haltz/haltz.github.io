@@ -153,7 +153,7 @@
 </nav>
 
     <div class="banner" id="banner" parallax=true
-         style="background: url('/img/bg.png') no-repeat center center;
+         style="background: url('/img/bg.svg') no-repeat center center;
            background-size: cover;">
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
@@ -180,7 +180,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      0 字
+      121 字
     </span>
   
 
@@ -223,7 +223,9 @@
             <h1 style="display: none">博客建立日志</h1>
             
             <div class="markdown-body">
-              
+              <h2 id="建立了自己的博客"><a href="#建立了自己的博客" class="headerlink" title="建立了自己的博客"></a>建立了自己的博客</h2><p>这几天建立了自己的博客，本来是想自己写一个网站的但是工作量可能对于我这个半吊子码农还是有点大，水平也不太够的样子。所以采用了<em>hexo</em>作为框架。主题使用的是<em>fluid</em>。配置什么都是按照fluid的README来的，并没有什么难度。</p>
+<h2 id="2020-12-28"><a href="#2020-12-28" class="headerlink" title="2020.12.28"></a>2020.12.28</h2><p>首页图改成了<em>Keep</em>主题的首页图，动态svg感觉挺好的。</p>
+
             </div>
             <hr>
             <div>
@@ -232,10 +234,17 @@
                   <div class="post-meta mr-3">
                     <i class="iconfont icon-category"></i>
                     
-                      <a class="hover-with-bg" href="/categories/%E6%97%A5%E5%BF%97/">日志</a>
+                      <a class="hover-with-bg" href="/categories/%E6%8A%80%E6%9C%AF%E9%9A%8F%E7%AC%94/">技术随笔</a>
                     
                   </div>
                 
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E6%8A%80%E6%9C%AF%E9%9A%8F%E7%AC%94/">技术随笔</a>
+                    
+                  </div>
                 
               </div>
               
@@ -246,15 +255,15 @@
                   <article class="post-prev col-6">
                     
                     
+                      <a href="/2020/12/28/Linux%E5%86%85%E6%A0%B8Device-Mapper-Zoned%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%BC%80%E5%8F%91/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Linux内核Device Mapper Zoned设计与开发</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
                   </article>
                   <article class="post-next col-6">
                     
-                    
-                      <a href="/2020/12/27/hello-world/">
-                        <span class="hidden-mobile">Hello World</span>
-                        <span class="visible-mobile">Next</span>
-                        <i class="iconfont icon-arrowright"></i>
-                      </a>
                     
                   </article>
                 </div>
@@ -440,6 +449,45 @@
 
 
 
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-svg.js" ></script>
+
+  
 
 
 
