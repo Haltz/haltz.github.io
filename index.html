@@ -177,21 +177,21 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2021/12/31/%E4%B8%80%E8%93%91%E7%83%9F%E9%9B%A8%E4%BB%BB%E5%B9%B3%E7%94%9F/">一蓑烟雨任平生</a>
+        <a href="/2021/03/31/Linux%20Dev%20Notes/">一蓑烟雨任平生</a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2021/12/31/%E4%B8%80%E8%93%91%E7%83%9F%E9%9B%A8%E4%BB%BB%E5%B9%B3%E7%94%9F/">
+        <a href="/2021/03/31/Linux%20Dev%20Notes/">
           
           
             
           
-          一蓑烟雨任平生，这句话出自苏东坡的定风波。
+          
+bitmap_get_value8
+这里并不总是能得到8bit，因为取值是按照sizeof(unsigned long)来取，如果想去64n+(56-63)位的值，那么只能取到64n+(7-0)位。
 
-莫听穿林打叶声，何妨吟啸且徐行，竹杖芒鞋轻胜马，谁怕，一蓑烟雨任平生。料峭春风吹酒醒，微冷，山头斜照却相迎。回首向来萧瑟处，归去，也无风雨也无晴。
-
-高中的时候，大概是高一，才第一次读到这首词。那是只是觉得这首词写的蛮好，但是其实还是更佩服滕王阁序那类。转眼差不多五年了，也第一次进入了20岁。
-2020年，如果说一个词形容的话，那比较准确的应该是：魔幻
+bitmap_clear/set
+这里有个例子，使用bitmap_get_value8(map, start)得到0xff，如果bitmap_clear(map, start, 1)理应得到0x7
         </a>
       </p>
 
@@ -199,8 +199,8 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2021-12-31 12:00" pubdate>
-              2021-12-31
+            <time datetime="2021-03-31 12:00" pubdate>
+              2021-03-31
             </time>
           </div>
         
@@ -219,45 +219,6 @@
               <a href="/tags/%E4%BA%BA%E7%94%9F/">人生</a>
             
           </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2021/03/18/Linux%20Dev%20Notes/"></a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2021/03/18/Linux%20Dev%20Notes/">
-          
-          
-            
-          
-          
-bitmap_get_value8
-这里并不总是能得到8bit，因为取值是按照sizeof(unsigned long)来取，如果想去64n+(56-63)位的值，那么只能取到64n+(7-0)位。
-
-bitmap_clear/set
-这里有个例子，使用bitmap_get_value8(map, start)得到0xff，如果bitmap_clear(map, start, 1)理应得到0x7
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2021-03-18 21:23" pubdate>
-              2021-03-18
-            </time>
-          </div>
-        
-        
         
       </div>
     </article>
@@ -299,6 +260,59 @@ bitmap_clear/set
           </div>
         
         
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2020/12/31/%E4%B8%80%E8%93%91%E7%83%9F%E9%9B%A8%E4%BB%BB%E5%B9%B3%E7%94%9F/">一蓑烟雨任平生</a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2020/12/31/%E4%B8%80%E8%93%91%E7%83%9F%E9%9B%A8%E4%BB%BB%E5%B9%B3%E7%94%9F/">
+          
+          
+            
+          
+          一蓑烟雨任平生，这句话出自苏东坡的定风波。
+
+莫听穿林打叶声，何妨吟啸且徐行，竹杖芒鞋轻胜马，谁怕，一蓑烟雨任平生。料峭春风吹酒醒，微冷，山头斜照却相迎。回首向来萧瑟处，归去，也无风雨也无晴。
+
+高中的时候，大概是高一，才第一次读到这首词。那是只是觉得这首词写的蛮好，但是其实还是更佩服滕王阁序那类。转眼差不多五年了，也第一次进入了20岁。
+2020年，如果说一个词形容的话，那比较准确的应该是：魔幻
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2020-12-31 12:00" pubdate>
+              2020-12-31
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E9%9A%8F%E7%AC%94/">随笔</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E4%BA%BA%E7%94%9F/">人生</a>
+            
+          </div>
         
       </div>
     </article>
