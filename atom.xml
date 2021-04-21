@@ -87,30 +87,4 @@
     
   </entry>
   
-  <entry>
-    <title>Linux内核Device Mapper Zoned设计与开发</title>
-    <link href="https://haltz.github.io/2020/12/28/Linux%E5%86%85%E6%A0%B8Device-Mapper-Zoned%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%BC%80%E5%8F%91/"/>
-    <id>https://haltz.github.io/2020/12/28/Linux%E5%86%85%E6%A0%B8Device-Mapper-Zoned%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%BC%80%E5%8F%91/</id>
-    <published>2020-12-28T08:06:05.000Z</published>
-    <updated>2020-12-30T11:48:01.823Z</updated>
-    
-    <content type="html"><![CDATA[<h2 id="如何基于物理设备ZBD构造一个虚拟块设备dm"><a href="#如何基于物理设备ZBD构造一个虚拟块设备dm" class="headerlink" title="如何基于物理设备ZBD构造一个虚拟块设备dm"></a>如何基于物理设备ZBD构造一个虚拟块设备dm</h2><p>这里我阅读了dmzadm这个工具，里面</p><ul><li>dm_load_module加载模块</li><li>dm_task_create()</li></ul><h2 id="load-metadata"><a href="#load-metadata" class="headerlink" title="load metadata"></a>load metadata</h2><p>加载元数据是构造dmz的第一步。首先我们需要通过dm</p>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;h2 id=&quot;如何基于物理设备ZBD构造一个虚拟块设备dm&quot;&gt;&lt;a href=&quot;#如何基于物理设备ZBD构造一个虚拟块设备dm&quot; class=&quot;headerlink&quot; title=&quot;如何基于物理设备ZBD构造一个虚拟块设备dm&quot;&gt;&lt;/a&gt;如何基于物理设备ZBD构造一个虚拟块设备</summary>
-      
-    
-    
-    
-    <category term="Linux" scheme="https://haltz.github.io/categories/Linux/"/>
-    
-    
-    <category term="毕业设计" scheme="https://haltz.github.io/tags/%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1/"/>
-    
-    <category term="Linux内核" scheme="https://haltz.github.io/tags/Linux%E5%86%85%E6%A0%B8/"/>
-    
-  </entry>
-  
 </feed>
