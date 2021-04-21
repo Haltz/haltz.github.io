@@ -1,0 +1,564 @@
+
+
+<!DOCTYPE html>
+<html lang="en" >
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="https://avatars3.githubusercontent.com/u/41386292?s=400&u=ead2d16c5460a46f3785733c66ceee7973536e55&v=4">
+  <link rel="icon" type="image/png" href="https://avatars3.githubusercontent.com/u/41386292?s=400&u=ead2d16c5460a46f3785733c66ceee7973536e55&v=4">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="Haltz">
+  <meta name="keywords" content="">
+  <title>内核并行：锁和内核抢占 - Haltz</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"haltz.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="Haltz" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Haltz</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                主页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/bg.svg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="内核并行：锁和内核抢占">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-03-15 17:17" pubdate>
+        March 15, 2021 pm
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.2k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      25
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">内核并行：锁和内核抢占</h1>
+            
+            <div class="markdown-body">
+              <blockquote>
+<p>转载自<a target="_blank" rel="noopener" href="http://people.cs.pitt.edu/~ouyang/20150225-kernel-concurreny.html">http://people.cs.pitt.edu/~ouyang/20150225-kernel-concurreny.html</a></p>
+</blockquote>
+<p>现代操作系统基本上都原生支持并行，主要是通过SMP、中断、内核抢占这些来实现的。为了保证内核运行的正确，以及竞争状态下数据不会出错，业内发明了一些机制来确保控制路径（Control Path，下面会阐述）互斥。</p>
+<blockquote>
+<p>术语</p>
+<ul>
+<li><strong>控制路径</strong>（control path）：程序执行的最小实体，也是参与同步的最小单元。可以是一个线程，也可以是没有上下文的代码片段（比如说中断处理）。</li>
+<li><strong>同步</strong>（synchronization）：多个实体的合作协调，也就是程序内控制路径的协调。比如互斥，生产者-消费者等等。</li>
+<li><strong>互斥</strong>（mutual exclusion）：任意时刻，多个控制路径只允许其中一个访问特定数据。</li>
+<li><strong>竞争状态</strong>（race condition）：互斥失效，多个控制路径彼此竞争访问特定数据。</li>
+<li><strong>关键代码</strong>（critical section）：以互斥的方式访问特定数据的代码片段。</li>
+<li><strong>原子操作</strong>（atmoic operation）：在内核编程的语境下，原子操作指的就是硬件原子化的读、写、加、比较、交换等操作。他们是高级同步机制（锁，信号量等）的基础。</li>
+</ul>
+</blockquote>
+<p>Note that, it is important to distinguish between code and data in mutual exclusion.（不太明白这句话该怎么翻译）互斥总是与特定共享数据和多个访问共享数据控制路径绑定在一起。关键代码是访问数据的代码片段。</p>
+<p><strong>Note</strong>：<strong>为了阐述方便，下面控制路径都翻译成线程，也就是普通的线程加上中断处理的代码片段</strong></p>
+<h2 id="竞争状态"><a href="#竞争状态" class="headerlink" title="竞争状态"></a>竞争状态</h2><p>没有同步的时候，两个线程同时访问特定数据，就会产生竞争。</p>
+<p>举个例子，下面这段代码。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">int</span> counter = <span class="hljs-number">0</span>;<br><br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">thread1</span><span class="hljs-params">(<span class="hljs-keyword">void</span>)</span></span>&#123;<br>  counter++;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">thread2</span><span class="hljs-params">(<span class="hljs-keyword">void</span>)</span></span>&#123;<br>  counter++;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>那么可能会发生如下的竞争情况</p>
+<blockquote>
+<p>Thread1: read from memory, counter = 0</p>
+<p>Thread2: read from memory, counter = 0</p>
+<p>Thread1: add in cpu, counter = 1</p>
+<p>Thread2: add in cpu, counter = 1</p>
+<p>Thread1: write back to memory, counter = 1</p>
+<p>Thread2: write back to memory, counter = 1</p>
+</blockquote>
+<p>最后counter的值是1，但是其实应该是2.</p>
+<p>为了阻止这种竞争状态，我们需要在访问数据counter的时候实现线程互斥。因此，我们可以加入spinlock来保护访问counter的代码片段。如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">int</span> counter = <span class="hljs-number">0</span>;<br><span class="hljs-keyword">spinlock_t</span> lock;<br><br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">thread1</span><span class="hljs-params">(<span class="hljs-keyword">void</span>)</span></span>&#123;<br>  spinlock(&amp;lock);<br>  counter++;<br>  spin_unlock(&amp;unlock);<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">thread2</span><span class="hljs-params">(<span class="hljs-keyword">void</span>)</span></span>&#123;<br>  ... same as thread1 ...<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>同步的原则就是，任何有可能被多线程同时访问的数据都应该有某个同步原语来保护（比如spinlock，mutex，sempore等等），保证访问互斥，除非访问本身就是原子的或者刻意实现竞争状态。</p>
+<h2 id="内核并行"><a href="#内核并行" class="headerlink" title="内核并行"></a>内核并行</h2><p>现代操作系统原生支持并行，因此每个内核工程师都应该十分熟悉内核级别的并行性和同步机制。</p>
+<p>内核级别并行：</p>
+<ul>
+<li>SMP（Symmetric multiprocessing）：多个处理器同时运行一段内核代码，共享内核数据。</li>
+<li>内核抢占：即使是一个单处理器系统，如果支持内核抢占我们也可以称之为并行的操作系统。内核空间一个低优先级的线程可以被一个高优先级的线程抢占，高优先级线程可以访问低优先级线程的数据。因此，数据需要在抢占时被保护。</li>
+<li>中断处理：假设一个操作系统只有一个处理器，一个运行的线程，那么就没有抢占和SMP问题。那么并行性就体现在中断处理上了。任意时刻硬件触发中断，中断处理的代码都会抢占当前运行的线程（中断处理是最高的优先级），除非关中断。如果中断处理抢占线程，那么它也可以访问原来线程的数据，此时数据也需要保护。</li>
+</ul>
+<p>为了保证数据正确，必须在所有并行情境下保证互斥。</p>
+<h3 id="SMP"><a href="#SMP" class="headerlink" title="SMP"></a>SMP</h3><p>spinlock是SMP情景内最常见的保证互斥的方式。任何CPU之间共享的数据都应该被保护，但是CPU自己的数据就不用了因为它们只能被自己访问。spinlock很好但是并不能处理所有的并行情况，特别是抢占和中断这些。<br>下面是一个spinlock的简单例子。访问counter时候用来保护counter。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs csharp"><span class="hljs-built_in">int</span> counter=<span class="hljs-number">0</span>;<br>spinlock_t <span class="hljs-keyword">lock</span>;<br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">kernel</span>(<span class="hljs-params"><span class="hljs-keyword">void</span></span>)</span>&#123;<br>        spinlock(&amp;<span class="hljs-keyword">lock</span>);<br>        counter++;<br>        spin_unlock(&amp;unlock);<br>&#125;<br></code></pre></td></tr></table></figure>
+<h4 id="抢占"><a href="#抢占" class="headerlink" title="抢占"></a>抢占</h4><p>过去系统为了简单不支持抢占，而且SMP也没流行。因此当时程序需要考虑的就只是中断。<br>下面这段程序展示了一个不支持抢占的简单内核。有两个app调用相同的系统调用，sycall时进入内核态，结束是返回用户态。为了让系统调用是线程安全的就必须在进入内核态时禁用抢占。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs csharp"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">application1</span>(<span class="hljs-params"><span class="hljs-keyword">void</span></span>)</span>&#123;syscall();&#125;<br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">application2</span>(<span class="hljs-params"><span class="hljs-keyword">void</span></span>)</span>&#123;syscall();&#125;<br><br><span class="hljs-built_in">int</span> a=<span class="hljs-number">0</span>;<br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">syscall</span>(<span class="hljs-params"><span class="hljs-keyword">void</span></span>)</span>&#123;<br>        <span class="hljs-built_in">int</span> b;<br>        disable_preemption();<br>        ... operation <span class="hljs-keyword">on</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> b ...<br>        a++;<br>        ... operation <span class="hljs-keyword">on</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> b ...<br>        enable_preemption();<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>这种方式的缺点</p>
+<ul>
+<li>内核响应不够好。假设现在app2优先级更高但是app1在内核态那么app2就必须等。对于延迟敏感的app或者RTOS特别不好。</li>
+<li>如果syscall里面发生了死循环，或者syscall调用的驱动里面发生了死循环那么就会导致没有任何程序能够再次拿到这个CPU。</li>
+</ul>
+<p>因此现在的操作系统都是不同程度支持抢占的。所以共享数据保护需要同时考虑SMP访问和抢占。因此我们禁用抢占的时机需要更加好，粒度要更小。<br>下面这段代码只在访问共享变量的时候禁用抢占。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs csharp"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">application1</span>(<span class="hljs-params"><span class="hljs-keyword">void</span></span>)</span>&#123;syscall();&#125;<br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">application2</span>(<span class="hljs-params"><span class="hljs-keyword">void</span></span>)</span>&#123;syscall();&#125;<br><br><span class="hljs-built_in">int</span> a=<span class="hljs-number">0</span>;<br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">syscall</span>(<span class="hljs-params"><span class="hljs-keyword">void</span></span>)</span>&#123;<br>        <span class="hljs-built_in">int</span> b;<br>        ... operation <span class="hljs-keyword">on</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> b ...<br>        disable_preemption();<br>        a++;<br>        enable_preemption();<br>        ... operation <span class="hljs-keyword">on</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> b ...<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>考虑到SMP，这段代码需要加上spinlock。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs csharp"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">application1</span>(<span class="hljs-params"><span class="hljs-keyword">void</span></span>)</span>&#123;syscall();&#125;<br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">application2</span>(<span class="hljs-params"><span class="hljs-keyword">void</span></span>)</span>&#123;syscall();&#125;<br><br><span class="hljs-built_in">int</span> a=<span class="hljs-number">0</span>;<br>spinlock_t <span class="hljs-keyword">lock</span>;<br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">syscall</span>(<span class="hljs-params"><span class="hljs-keyword">void</span></span>)</span>&#123;<br>        <span class="hljs-built_in">int</span> b;<br>        ... operation <span class="hljs-keyword">on</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> b ...<br>        spin_lock(&amp;<span class="hljs-keyword">lock</span>);<br>        disable_preemption();<br>        a++;<br>        enable_preemption();<br>        spin_unlock(&amp;<span class="hljs-keyword">lock</span>);<br>        ... operation <span class="hljs-keyword">on</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> b ...<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>在Linux内，spinlock会自动禁止抢占（通过自增一个全局变量preemption_count）。但是CPU自己的数据是不被spinlock保护的，因此内核代码应该是这样的。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs csharp"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">application1</span>(<span class="hljs-params"><span class="hljs-keyword">void</span></span>)</span>&#123;syscall();&#125;<br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">application2</span>(<span class="hljs-params"><span class="hljs-keyword">void</span></span>)</span>&#123;syscall();&#125;<br><br><span class="hljs-built_in">int</span> a=<span class="hljs-number">0</span>;<br>PER_CPU_VAR x_per_cpu;<br>spinlock_t <span class="hljs-keyword">lock</span>;<br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">syscall</span>(<span class="hljs-params"><span class="hljs-keyword">void</span></span>)</span>&#123;<br>        <span class="hljs-built_in">int</span> b;<br>        ... operation <span class="hljs-keyword">on</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> b ...<br>        linux_spin_lock(&amp;<span class="hljs-keyword">lock</span>);<br>        a++;<br>        linux_spin_unlock(&amp;<span class="hljs-keyword">lock</span>);<br>        ...<br>        disable_preemption();<br>        x_per_cpu++;<br>        enable_preemption();<br>        ... operation <span class="hljs-keyword">on</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> b ...<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>spinlock隐式禁止抢占，然后具体到CPU的数据需要显式禁止抢占。</p>
+<h3 id="Interrupt-Handlers"><a href="#Interrupt-Handlers" class="headerlink" title="Interrupt Handlers"></a>Interrupt Handlers</h3><p>中断是硬件（典型情况，但很多时候其实不是）发出信号声明一些事件发生，然后中断处理代码就会抢占CPU（除非中断禁用了）。因此中断处理程序和一般内核代码共享的数据当内核代码访问时需要禁止中断。<br>之前的讨论没有涉及spinlock是如何在中断存在的情况下保护数据的。举个例子，内核程序获取spinlock，访问一段数据，此时中断插入，也获取这把spinlock，那么就会导致两种情况。</p>
+<ul>
+<li>单核：死锁</li>
+<li>SMP：内核代码如果在另一个核上面跑，那么中断会在内核代码完成后获得spinlock，没有问题但也会导致性能下降。<br>因此，现在要涉及一下spinlock是如何在中断存在的情况下保护数据的。其实就是上锁之前先禁用中断，<code>spin_lock_irqsave</code>。<br>但是有趣的问题来了，如果中断被禁用了，那么抢占也就不存在了，这时候是否需要禁用抢占呢？（抢占也是通过中断机制实现的，但是和中断还是不同的）。这里看FAQ。</li>
+</ul>
+<h3 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h3><ul>
+<li><code>spinlock</code> v.s. <code>spinlock_irq</code> v.s. <code>spinlock_irqsave</code><br>这些都是禁止抢占的。如果获取spinlock想要禁止中断，一般用irqsave而不是irq，因为irqsave包含了保存中断状态的过程。想象一下下面这种情况，<code>spinunlock_restore2()</code>会导致中断打开，这一般来说在spinlock1上锁期间是不被希望的。<figure class="highlight gcode"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs gcode">spi<span class="hljs-symbol">nlock_irq1</span><span class="hljs-comment">()</span>;<br>spi<span class="hljs-symbol">nlock_irq2</span><span class="hljs-comment">()</span>;<br>spi<span class="hljs-symbol">nunlock_restore2</span><span class="hljs-comment">()</span>;<br>spi<span class="hljs-symbol">nunlock_restore1</span><span class="hljs-comment">()</span>;<br></code></pre></td></tr></table></figure></li>
+<li>禁用抢占和禁用中断的区别<br>Linux内核在抢占的时候会有上下文切换，timer触发中断，中断返回检查need_reschedule()，是就换进程，不是就继续原来的。但是需要注意的是，内核代码自己也可以调用need_reschedule。因此当你确定内核代码没有自己触发reschedule的时候，禁用中断就能保证禁用抢占了。</li>
+</ul>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/03/18/Linux%20Dev%20Notes/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile"></span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/12/28/Linux%E5%86%85%E6%A0%B8Device-Mapper-Zoned%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%BC%80%E5%8F%91/">
+                        <span class="hidden-mobile">Linux内核Device Mapper Zoned设计与开发</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'haltz/haltz.github.io');
+      s.setAttribute('issue-term', 'pathname');
+      
+      s.setAttribute('label', 'utterances');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3.1.2/es5/tex-svg.js" ></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>
