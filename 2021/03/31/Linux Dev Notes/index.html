@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="Haltz">
   <meta name="keywords" content="">
-  <title>一蓑烟雨任平生 - Haltz</title>
+  <title>Linux Dev Notes - Haltz</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
 
@@ -158,7 +158,7 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="一蓑烟雨任平生">
+            <span class="h2" id="subtitle" title="Linux Dev Notes">
               
             </span>
 
@@ -180,7 +180,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      197 字
+      231 字
     </span>
   
 
@@ -220,7 +220,7 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">一蓑烟雨任平生</h1>
+            <h1 style="display: none">Linux Dev Notes</h1>
             
             <div class="markdown-body">
               <ul>
@@ -229,8 +229,12 @@
 </li>
 <li><p><strong>bitmap_clear/set</strong></p>
 <p>这里有个例子，使用bitmap_get_value8(map, start)得到0xff，如果bitmap_clear(map, start, 1)理应得到0x7f，实际上我们得到的0xfe。其实执行是没有错误的，只是这里需要区分大端（Bit 7.6.5.4.3.2.1.0在内存里也是7.6.5.4.3.2.1.0）小端（Bit 7.6.5.4.3.2.1.0在内存里也是0.1.2.3.4.5.6.7）。如果是小端（大部分PC），那么就会有0x7F的情况。因此，<strong>bitmap_clear/set仅仅适用于需要具体到硬件如何存储bit的情况（个人理解），一般情况还是bitmap_set_value8</strong>。</p>
+<ul>
+<li>update: bitmap_set_value8对我来说貌似还是有些问题，既然如此还不如自己写呢。</li>
+</ul>
 </li>
-<li></li>
+<li><p>不能在spinlock内使用mutex或者semphore</p>
+</li>
 </ul>
 
             </div>
@@ -241,7 +245,7 @@
                   <div class="post-meta mr-3">
                     <i class="iconfont icon-category"></i>
                     
-                      <a class="hover-with-bg" href="/categories/%E9%9A%8F%E7%AC%94/">随笔</a>
+                      <a class="hover-with-bg" href="/categories/Linux/">Linux</a>
                     
                   </div>
                 
@@ -249,7 +253,7 @@
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
-                      <a class="hover-with-bg" href="/tags/%E4%BA%BA%E7%94%9F/">人生</a>
+                      <a class="hover-with-bg" href="/tags/%E5%BC%80%E5%8F%91%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/">开发注意事项</a>
                     
                   </div>
                 
