@@ -6,7 +6,7 @@
   <link href="https://haltz.github.io/atom.xml" rel="self"/>
   
   <link href="https://haltz.github.io/"/>
-  <updated>2021-04-22T09:01:53.163Z</updated>
+  <updated>2021-06-10T08:43:37.795Z</updated>
   <id>https://haltz.github.io/</id>
   
   <author>
@@ -15,6 +15,51 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title></title>
+    <link href="https://haltz.github.io/2021/06/08/ArchLinux%20Manual/"/>
+    <id>https://haltz.github.io/2021/06/08/ArchLinux%20Manual/</id>
+    <published>2021-06-08T11:23:07.547Z</published>
+    <updated>2021-06-10T08:43:37.795Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="ArchLinux-Install-Memo"><a href="#ArchLinux-Install-Memo" class="headerlink" title="ArchLinux Install Memo"></a>ArchLinux Install Memo</h1><h3 id="GPG-Error"><a href="#GPG-Error" class="headerlink" title="GPG Error"></a>GPG Error</h3><p>pacman.conf设置SigLevel=Never</p><h3 id="mnt-var-lib-pacman-sync-core-db…-unrecognized-archive-format"><a href="#mnt-var-lib-pacman-sync-core-db…-unrecognized-archive-format" class="headerlink" title="/mnt/var/lib/pacman/sync/core.db… unrecognized archive format"></a>/mnt/var/lib/pacman/sync/core.db… unrecognized archive format</h3><p>删除*.db然后重新执行pacstrap /mnt base linux linux-firmware</p><h3 id="联网"><a href="#联网" class="headerlink" title="联网"></a>联网</h3><p>systemctl enable networks+dhcpcd+resolved，需要安装对应的包</p><h3 id="添加用户"><a href="#添加用户" class="headerlink" title="添加用户"></a>添加用户</h3><p>useradd -m -g users -s /bin/zsh haltz</p><p>passed haltz</p><h3 id="安装kde-plasma"><a href="#安装kde-plasma" class="headerlink" title="安装kde-plasma"></a>安装kde-plasma</h3><p>安装xorg,kde</p><p>cp /etc/X11/xinit/xinitrc ~/.xinitrc</p><p>修改exec…一行为(exec后所有内容被忽略)</p><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">DESKTOP_SESSION</span>=plasma<br>exec startplasma-x11<br></code></pre></td></tr></table></figure><p>如要启动，startx</p><h3 id="设置tty字体"><a href="#设置tty字体" class="headerlink" title="设置tty字体"></a>设置tty字体</h3><p>sudo cp *.psf.gz /usr/share/kbd/consolefonts/</p><p>sudo set font *.psf.gz</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h1 id=&quot;ArchLinux-Install-Memo&quot;&gt;&lt;a href=&quot;#ArchLinux-Install-Memo&quot; class=&quot;headerlink&quot; title=&quot;ArchLinux Install Memo&quot;&gt;&lt;/a&gt;ArchLinux Install Me</summary>
+      
+    
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>ArchLinux Memo</title>
+    <link href="https://haltz.github.io/2021/05/30/ArchLinux-Memo/"/>
+    <id>https://haltz.github.io/2021/05/30/ArchLinux-Memo/</id>
+    <published>2021-05-30T03:04:20.000Z</published>
+    <updated>2021-05-30T03:05:52.555Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="ArchLinux"><a href="#ArchLinux" class="headerlink" title="ArchLinux"></a>ArchLinux</h1><p>ArchLinux使用问题记录。</p><h2 id="Add-User"><a href="#Add-User" class="headerlink" title="Add User"></a>Add User</h2>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h1 id=&quot;ArchLinux&quot;&gt;&lt;a href=&quot;#ArchLinux&quot; class=&quot;headerlink&quot; title=&quot;ArchLinux&quot;&gt;&lt;/a&gt;ArchLinux&lt;/h1&gt;&lt;p&gt;ArchLinux使用问题记录。&lt;/p&gt;
+&lt;h2 id=&quot;Add-User&quot;&gt;&lt;a </summary>
+      
+    
+    
+    
+    <category term="Linux" scheme="https://haltz.github.io/categories/Linux/"/>
+    
+    
+    <category term="Linux Arch" scheme="https://haltz.github.io/tags/Linux-Arch/"/>
+    
+  </entry>
   
   <entry>
     <title>Linux Dev Notes</title>

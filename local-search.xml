@@ -4,6 +4,44 @@
   
   
   <entry>
+    <title></title>
+    <link href="/2021/06/08/ArchLinux%20Manual/"/>
+    <url>/2021/06/08/ArchLinux%20Manual/</url>
+    
+    <content type="html"><![CDATA[<h1 id="ArchLinux-Install-Memo"><a href="#ArchLinux-Install-Memo" class="headerlink" title="ArchLinux Install Memo"></a>ArchLinux Install Memo</h1><h3 id="GPG-Error"><a href="#GPG-Error" class="headerlink" title="GPG Error"></a>GPG Error</h3><p>pacman.conf设置SigLevel=Never</p><h3 id="mnt-var-lib-pacman-sync-core-db…-unrecognized-archive-format"><a href="#mnt-var-lib-pacman-sync-core-db…-unrecognized-archive-format" class="headerlink" title="/mnt/var/lib/pacman/sync/core.db… unrecognized archive format"></a>/mnt/var/lib/pacman/sync/core.db… unrecognized archive format</h3><p>删除*.db然后重新执行pacstrap /mnt base linux linux-firmware</p><h3 id="联网"><a href="#联网" class="headerlink" title="联网"></a>联网</h3><p>systemctl enable networks+dhcpcd+resolved，需要安装对应的包</p><h3 id="添加用户"><a href="#添加用户" class="headerlink" title="添加用户"></a>添加用户</h3><p>useradd -m -g users -s /bin/zsh haltz</p><p>passed haltz</p><h3 id="安装kde-plasma"><a href="#安装kde-plasma" class="headerlink" title="安装kde-plasma"></a>安装kde-plasma</h3><p>安装xorg,kde</p><p>cp /etc/X11/xinit/xinitrc ~/.xinitrc</p><p>修改exec…一行为(exec后所有内容被忽略)</p><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">DESKTOP_SESSION</span>=plasma<br>exec startplasma-x11<br></code></pre></td></tr></table></figure><p>如要启动，startx</p><h3 id="设置tty字体"><a href="#设置tty字体" class="headerlink" title="设置tty字体"></a>设置tty字体</h3><p>sudo cp *.psf.gz /usr/share/kbd/consolefonts/</p><p>sudo set font *.psf.gz</p>]]></content>
+    
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>ArchLinux Memo</title>
+    <link href="/2021/05/30/ArchLinux-Memo/"/>
+    <url>/2021/05/30/ArchLinux-Memo/</url>
+    
+    <content type="html"><![CDATA[<h1 id="ArchLinux"><a href="#ArchLinux" class="headerlink" title="ArchLinux"></a>ArchLinux</h1><p>ArchLinux使用问题记录。</p><h2 id="Add-User"><a href="#Add-User" class="headerlink" title="Add User"></a>Add User</h2>]]></content>
+    
+    
+    <categories>
+      
+      <category>Linux</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>Linux Arch</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>Linux Dev Notes</title>
     <link href="/2021/03/31/Linux%20Dev%20Notes/"/>
     <url>/2021/03/31/Linux%20Dev%20Notes/</url>
